@@ -5,6 +5,7 @@ After a few epochs, launch TensorBoard to see the images being generated at ever
 tensorboard --logdir default
 """
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -13,7 +14,6 @@ from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
 from pytorch_lightning.core import LightningModule
 from pytorch_lightning.core import LightningDataModule
-from matrix_methods import create_batch_sl2z
 
 class Generator(nn.Module):
     def __init__(self):
@@ -151,17 +151,14 @@ class MatrixDataset(Dataset):
         return self.matrices[idx]
 
 class SL2Z_DataModule(LightningDataModule):
-    def __init__(self, max_length, num_dataset, batch_size) -> None:
+    def __init__(self, data_path, batch_size) -> None:
         super().__init__()
-        self.max_length = max_length
-        self.num_dataset = num_dataset
+        self.data_path = data_path
         self.batch_size = batch_size
 
     def setup(self, stage: str):
         if stage == 'fit':
-            self.matrices = torch.from_numpy(
-                create_batch_sl2z(self.max_length, self.num_dataset)
-                ).to(torch.float32)
+            self.matrices = torch.tensor(np.load(self.data_path)).to(torch.float32)
     
     def train_dataloader(self):
         print('Creating train dataloader')
