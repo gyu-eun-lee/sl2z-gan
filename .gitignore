@@ -1,5 +1,5 @@
 .ipynb_checkpoints/
 __pycache__/
-lightning_logs/
+sl2z-gan-logs/
 checkpoints/
-data.npy
+*.npy
